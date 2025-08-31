@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>पाटलिपुत्र वैभवम्</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f2f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* Advertisement styling */
+        .ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background-color: #f9f9f9;
+            padding: 10px 0;
+            margin: 0;
+        }
+        
+        .ad-label {
+            text-align: center;
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        /* Main content container */
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .name-input-section, .quiz-section, .result-section {
+            display: none; /* Hide sections by default */
+        }
+        
+        .name-input-section.active, .quiz-section.active, .result-section.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        .input-group input[type="text"] {
+            width: calc(100% - 40px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            max-width: 400px;
+        }
+        
+        .start-btn {
+            display: block;
+            width: 180px;
+            padding: 12px 0;
+            margin: 20px auto 0;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .start-btn:hover {
+            background-color: #218838;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.05em;
+        }
+        
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            line-height: 1.5;
+            color: #343a40;
+        }
+        
+        .options label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            font-size: 1.1em;
+            background-color: #f8f8f8;
+        }
+        
+        .options label:hover {
+            background-color: #e9ecef;
+            border-color: #cce5ff;
+        }
+        
+        .options input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        
+        .next-btn {
+            display: block;
+            width: 180px;
+            padding: 12px 0;
+            margin: 30px auto 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .next-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Feedback colors */
+        .options label.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .options label.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .result-section {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            background-color: #e7f7ff;
+        }
+        
+        .result-section h2 {
+            color: #007bff;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        
+        .result-section p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .result-section p strong {
+            color: #343a40;
+        }
+        
+        .result-section .score-detail {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .result-section .score-detail.correct-count { color: #28a745; }
+        .result-section .score-detail.incorrect-count { color: #dc3545; }
+        .result-section .score-detail.unanswered-count { color: #ffc107; }
+        
+        .restart-btn {
+            background-color: #6c757d;
+            margin-top: 30px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Advertisement -->
+    <div class="ad-container">
+        <div>
+            <div class="ad-label">विज्ञापन</div>
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '4b505c9273cf9161c278efee028f35e2',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>पाटलिपुत्र वैभवम्</h1>
+
+        <div id="nameInputSection" class="name-input-section active">
+            <div class="input-group">
+                <label for="userName">अपना नाम दर्ज करें:</label>
+                <input type="text" id="userName" placeholder="अपना नाम यहाँ लिखें" required>
+            </div>
+            <button id="startButton" class="start-btn">क्विज शुरू करें</button>
+        </div>
+
+        <div id="quizSection" class="quiz-section">
+            <div class="question-block">
+                <span class="question-number" id="currentQuestionNumber"></span>
+                <p class="question-text" id="questionText"></p>
+                <form id="quizForm">
+                    <div class="options" id="optionsContainer">
+                        <!-- Options will be loaded here by JavaScript -->
+                    </div>
+                    <button type="button" id="nextButton" class="next-btn">अगला प्रश्न</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="resultSection" class="result-section">
+            <h2>क्विज परिणाम</h2>
+            <p><strong>परीक्षार्थी:</strong> <span id="displayUserName"></span></p>
+            <p class="score-detail correct-count">सही उत्तर: <span id="correctCount">0</span></p>
+            <p class="score-detail incorrect-count">गलत उत्तर: <span id="incorrectCount">0</span></p>
+            <p class="score-detail unanswered-count">छोड़े गए प्रश्न: <span id="unansweredCount">0</span></p>
+            <button id="restartButton" class="next-btn restart-btn">पुनः प्रयास करें</button>
+        </div>
+    </div>
+
+    <!-- Bottom Advertisement -->
+    <div class="ad-container">
+        <div>
+            <div class="ad-label">विज्ञापन</div>
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '4b505c9273cf9161c278efee028f35e2',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "पाटलिपुत्रं कस्याः नद्याः तीरे अवस्थितम् अस्ति?",
+                options: ["A) गंगायाः", "B) यमुनायाः", "C) गोदावर्याः", "D) सरस्वतीयाः"],
+                answer: "A"
+            },
+            {
+                q: "पाटलिपुत्रस्य नामांतरम् किम्?",
+                options: ["A) सोनपुरम्", "B) राजगृहम्", "C) कुसुमपुरम्", "D) हाजीपुरम्"],
+                answer: "C"
+            },
+            {
+                q: "बुद्धकाले पाटलिग्रामस्य नाम किमासीत्?",
+                options: ["A) पाटलिपुत्रम्", "B) कुसुमपुरम्", "C) पाटलिग्रामः", "D) पुष्पपुरम्"],
+                answer: "C"
+            },
+            {
+                q: "कस्य शासनकाले पाटलिपुत्रस्य शोभा रक्षाव्यवस्था च उत्कृष्टा आसीत्?",
+                options: ["A) अशोकस्य", "B) चन्द्रगुप्तमौर्यस्य", "C) मुगलशासनकाले", "D) गुप्तशासनकाले"],
+                answer: "B"
+            },
+            {
+                q: "मेगास्थनीजः कस्मिन् ग्रन्थे पाटलिपुत्रस्य वर्णनं कृतवान्?",
+                options: ["A) मुद्रा राक्षस", "B) राजतरंगिणी", "C) इंडिका", "D) कौमुदी महोत्सव"],
+                answer: "C"
+            },
+            {
+                q: "कवि राजशेखरस्य रचना का अस्ति?",
+                options: ["A) काव्यमीमांसा", "B) मुद्रा राक्षस", "C) कथासरित्सागरः", "D) पंचतंत्रम्"],
+                answer: "A"
+            },
+            {
+                q: "पाटलिपुत्रस्य इतिहासः कतिवर्षीयः अस्ति?",
+                options: ["A) द्विसहस्रवर्षीयः", "B) सार्धद्विसहस्रवर्षीयः", "C) त्रिसहस्रवर्षीयः", "D) चतुःसहस्रवर्षीयः"],
+                answer: "B"
+            },
+            {
+                q: "यूनानस्य राजदूतः कः आसीत्?",
+                options: ["A) फाह्यान", "B) ह्वेनसांग", "C) मेगास्थनीजः", "D) इत्सिंग"],
+                answer: "C"
+            },
+            {
+                q: "'कौमुदीमहोत्सवः' कदा समायोज्यते स्म?",
+                options: ["A) वर्षाकाले", "B) वसन्तकाले", "C) शरदकाले", "D) ग्रीष्मकाले"],
+                answer: "C"
+            },
+            {
+                q: "कौमुदीमहोत्सवः कस्य शासनकाले अतीव प्रचलितः आसीत्?",
+                options: ["A) अशोकस्य", "B) मुगलशासनकाले", "C) गुप्तशासनकाले", "D) मौर्यशासनकाले"],
+                answer: "C"
+            },
+            {
+                q: "पाटलिपुत्रस्य नाम 'कुसुमपुरम्' इति कस्मात् अभवत्?",
+                options: ["A) पुष्पाणां बाहुल्यात्", "B) कुसुमानां बाहुल्यात्", "C) कुसुमाणां ग्रामात्", "D) राजा कुसुमात्"],
+                answer: "B"
+            },
+            {
+                q: "अशोकस्य शासनकाले पाटलिपुत्रं कीदृशम् आसीत्?",
+                options: ["A) समृद्धम्", "B) समृद्धतरम्", "C) समृद्धतमम्", "D) निर्धनम्"],
+                answer: "B"
+            },
+            {
+                q: "'मुद्राराक्षस' नामकं नाटकं कस्य रचना अस्ति?",
+                options: ["A) कालिदासस्य", "B) विशाखदत्तस्य", "C) राजशेखरस्य", "D) दामोदरगुप्तस्य"],
+                answer: "B"
+            },
+            {
+                q: "'पाटलिपुत्र वैभवम्' पाठे कस्य नगरस्य वर्णनम् अस्ति?",
+                options: ["A) राजगृहस्य", "B) वैशाल्याः", "C) पाटलिपुत्रस्य", "D) वाराणसीयाः"],
+                answer: "C"
+            },
+            {
+                q: "पटना नगरस्य पालिक देवी का अस्ति?",
+                options: ["A) शीतला देवी", "B) काली देवी", "C) पटन देवी", "D) दुर्गा देवी"],
+                answer: "C"
+            },
+            {
+                q: "सिख संप्रदायस्य दशम गुरुः कः आसीत्?",
+                options: ["A) गुरु नानक देव", "B) गुरु तेग बहादुर", "C) गुरु गोविन्दसिंहः", "D) गुरु अर्जुन देव"],
+                answer: "C"
+            },
+            {
+                q: "गुरु गोविन्दसिंहस्य जन्मस्थानं कुत्र अस्ति?",
+                options: ["A) दिल्ली", "B) अमृतसर", "C) पटना", "D) लुधियाना"],
+                answer: "C"
+            },
+            {
+                q: "पाटलिपुत्रं कसमात् कारणात् प्रसिद्धम् अस्ति?",
+                options: ["A) वैभवोत्कर्षेण", "B) दुर्भिक्षेण", "C) अवनत्या", "D) अज्ञानता"],
+                answer: "A"
+            },
+            {
+                q: "'पाटलिपुत्रम्' इति नाम कथमभवत्?",
+                options: ["A) पाटलपुष्पाणां बाहुल्यात्", "B) पाटलपुष्पाणां पुत्तलिका रचनाम् आश्रित्य", "C) पाटलिनामक राजात्", "D) पाटलवृक्षात्"],
+                answer: "B"
+            },
+            {
+                q: "पाटलिपुत्रस्य उत्तरदिशायां का नदी प्रवहति?",
+                options: ["A) यमुना", "B) सरयू", "C) गंगा", "D) गंडक"],
+                answer: "C"
+            },
+            {
+                q: "गांधीसेतुः कुत्र अस्ति?",
+                options: ["A) वाराणसी", "B) इलाहाबाद", "C) पटना", "D) हाजीपुर"],
+                answer: "C"
+            },
+            {
+                q: "गोलगृहं कुत्र अस्ति?",
+                options: ["A) गया", "B) पटना", "C) आरा", "D) बक्सर"],
+                answer: "B"
+            },
+            {
+                q: "पाटलिपुत्रनगरस्य नामान्तरम् 'पुष्पपुरम्' इति कस्मिन् समये आसीत्?",
+                options: ["A) मुगलकाले", "B) मध्यकाले", "C) प्राचीनकाले", "D) आधुनिककाले"],
+                answer: "C"
+            },
+            {
+                q: "'काव्यमीमांसा' नामकं ग्रन्थं कः लिखितवान्?",
+                options: ["A) दामोदरगुप्तः", "B) राजशेखरः", "C) चाणक्यः", "D) विशाखदत्तः"],
+                answer: "B"
+            },
+            {
+                q: "'बहुलं उत्पादनम्' इति अर्थे कः शब्दः पाठे प्रयुक्तः?",
+                options: ["A) प्रचुरम्", "B) विशालम्", "C) उत्पद्यते", "D) प्रभूतम्"],
+                answer: "D"
+            },
+            {
+                q: "पाटलिपुत्रं कस्य राजधानी अस्ति?",
+                options: ["A) बिहारराज्यस्य", "B) उत्तर प्रदेशस्य", "C) मध्यप्रदेशस्य", "D) झारखंडस्य"],
+                answer: "A"
+            },
+            {
+                q: "'मगधस्य' इति शब्दस्य मूलरूपं किम्?",
+                options: ["A) मगध", "B) मगधम्", "C) मगधः", "D) मगधा"],
+                answer: "A"
+            },
+            {
+                q: "'आसीत्' इति क्रियापदस्य लकारः कः?",
+                options: ["A) लट् लकार", "B) लृट् लकार", "C) लङ् लकार", "D) लोट् लकार"],
+                answer: "C"
+            },
+            {
+                q: "'पाटलिपुत्र' शब्दः कस्मात् शब्दात् निष्पन्नः?",
+                options: ["A) पाटल", "B) पाटलि", "C) पाटला", "D) पुत्रा"],
+                answer: "B"
+            },
+            {
+                q: "'विशालम्' इत्यस्य विशेषणम् किम्?",
+                options: ["A) समृद्धम्", "B) सुन्दरम्", "C) पाटलिपुत्रम्", "D) नगरम्"],
+                answer: "C"
+            },
+            {
+                q: "'अन्यासां' शब्दस्य मूलरूपं किम्?",
+                options: ["A) अन्य", "B) अन्या", "C) अन्यत्", "D) अन्यासु"],
+                answer: "B"
+            },
+            {
+                q: "'समायोज्यते स्म' इति पदस्य कालः कः?",
+                options: ["A) वर्तमान", "B) भूत", "C) भविष्य", "D) लोट्"],
+                answer: "B"
+            },
+            {
+                q: "'मेगास्थनीजः' कस्मिन् देशे आसीत्?",
+                options: ["A) यूनान", "B) चीन", "C) जापान", "D) भारत"],
+                answer: "A"
+            },
+            {
+                q: "'नगराणाम्' इत्यत्र का विभक्तिः?",
+                options: ["A) प्रथमा", "B) द्वितीया", "C) पंचमी", "D) षष्ठी"],
+                answer: "D"
+            },
+            {
+                q: "'बहुवारम्' इत्यस्य अर्थः किम्?",
+                options: ["A) एक बार", "B) दो बार", "C) अनेक बार", "D) कुछ बार"],
+                answer: "C"
+            },
+            {
+                q: "गंगायाः उपरि सेतुः कः?",
+                options: ["A) राजेंद्र सेतु", "B) गांधी सेतु", "C) नेहरू सेतु", "D) इंदिरा सेतु"],
+                answer: "B"
+            },
+            {
+                q: "'एशिया महादेशस्य दीर्घतमः सेतुः' कः?",
+                options: ["A) राजेंद्र सेतु", "B) महात्मा गांधी सेतु", "C) जवाहर सेतु", "D) अटल सेतु"],
+                answer: "B"
+            },
+            {
+                q: "पाटलिपुत्रस्य प्राचीनं नाम किम्?",
+                options: ["A) पुष्पपुरम्", "B) कुसुम्भपुरम्", "C) पाटलिग्रामः", "D) उपर्युक्तम् सर्वे"],
+                answer: "D"
+            },
+            {
+                q: "पाटलिपुत्रस्य वर्णनं कस्मिन् पाठे अस्ति?",
+                options: ["A) अलसकथा", "B) मङ्गलम्", "C) पाटलिपुत्र वैभवम्", "D) भारतमहिमा"],
+                answer: "C"
+            },
+            {
+                q: "'पाटलपुष्पाणाम् पुत्तलिका रचनाम्' आश्रित्य कस्य नगरस्य नाम प्रवर्तितम्?",
+                options: ["A) पाटलिग्रामस्य", "B) पुष्पपुरस्य", "C) पाटलिपुत्रस्य", "D) कुसुम्भपुरस्य"],
+                answer: "C"
+            },
+            {
+                q: "दामोदरगुप्तः नाम कः कविः?",
+                options: ["A) राजशेखरः", "B) कालिदासः", "C) कुट्टनीमताख्यकाव्यस्य कविः", "D) बाणभट्टः"],
+                answer: "C"
+            },
+            {
+                q: "'कौमुदी महोत्सव' इति पर्व कस्मिन् वंशे प्रचलितम् आसीत्?",
+                options: ["A) मौर्यवंशे", "B) गुप्तवंशे", "C) मुगलवंशे", "D) चोलवंशे"],
+                answer: "B"
+            },
+            {
+                q: "'पटनेति' शब्दः कस्मात् शब्दात् निष्पन्नः?",
+                options: ["A) पाटल", "B) पत्तनम्", "C) पट्टा", "D) पुत्र"],
+                answer: "B"
+            },
+            {
+                q: "पाटलिपुत्रस्य प्रसिद्धं नाम 'पटना' केन शब्देन आरब्धम्?",
+                options: ["A) पत्तनम्", "B) पुष्पपुरम्", "C) पाटलिग्रामः", "D) कुसुम्भपुरम्"],
+                answer: "A"
+            },
+            {
+                q: "'यत्र' अव्ययस्य अर्थः किम्?",
+                options: ["A) यहाँ", "B) वहाँ", "C) कहाँ", "D) जहाँ"],
+                answer: "D"
+            },
+            {
+                q: "'अद्य' अव्ययस्य अर्थः किम्?",
+                options: ["A) कल", "B) परसों", "C) आज", "D) कभी"],
+                answer: "C"
+            },
+            {
+                q: "'बिहारस्य राजधानी' का अस्ति?",
+                options: ["A) दिल्ली", "B) पाटलिपुत्रम्", "C) लखनऊ", "D) मुंबई"],
+                answer: "B"
+            },
+            {
+                q: "'अति' उपसर्गस्य अर्थः किम्?",
+                options: ["A) कम", "B) अधिक", "C) बिना", "D) दूर"],
+                answer: "B"
+            },
+            {
+                q: "'वैभवम्' इत्यस्य अर्थः किम्?",
+                options: ["A) गरीबी", "B) धन-संपत्ति", "C) सुंदरता", "D) दुर्गंध"],
+                answer: "B"
+            },
+            {
+                q: "'पुरन्दरस्थानम्' इति कस्य नगरस्य नाम?",
+                options: ["A) राजगृहस्य", "B) पाटलिपुत्रस्य", "C) वाराणसीयाः", "D) अयोध्यायाः"],
+                answer: "B"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswersCount = 0;
+        let incorrectAnswersCount = 0;
+        let unansweredQuestionsCount = 0;
+        let userName = "";
+        let hasAnsweredCurrentQuestion = false;
+
+        // DOM elements
+        const nameInputSection = document.getElementById('nameInputSection');
+        const quizSection = document.getElementById('quizSection');
+        const resultSection = document.getElementById('resultSection');
+        const userNameInput = document.getElementById('userName');
+        const startButton = document.getElementById('startButton');
+        const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const nextButton = document.getElementById('nextButton');
+        const displayUserName = document.getElementById('displayUserName');
+        const correctCount = document.getElementById('correctCount');
+        const incorrectCount = document.getElementById('incorrectCount');
+        const unansweredCount = document.getElementById('unansweredCount');
+        const restartButton = document.getElementById('restartButton');
+
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        nextButton.addEventListener('click', moveToNextQuestion);
+        restartButton.addEventListener('click', resetQuiz);
+
+        function startQuiz() {
+            userName = userNameInput.value.trim();
+            if (userName === "") {
+                alert("कृपया क्विज शुरू करने से पहले अपना नाम दर्ज करें।");
+                return;
+            }
+
+            nameInputSection.classList.remove('active');
+            quizSection.classList.add('active');
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            hasAnsweredCurrentQuestion = false;
+
+            if (currentQuestionIndex < questions.length) {
+                const qData = questions[currentQuestionIndex];
+                // Modified to show question number before the question text
+                currentQuestionNumber.textContent = `प्रश्न ${currentQuestionIndex + 1} / ${questions.length}`;
+                questionText.textContent = `${currentQuestionIndex + 1}. ${qData.q}`;
+                optionsContainer.innerHTML = '';
+
+                qData.options.forEach((option, index) => {
+                    const optionId = `q${currentQuestionIndex}-option${index}`;
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `q${currentQuestionIndex}`;
+                    input.value = option.charAt(0);
+                    input.id = optionId;
+
+                    label.htmlFor = optionId;
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(option));
+
+                    label.addEventListener('click', (e) => {
+                        if (e.target.type !== 'radio') {
+                            input.checked = true;
+                        }
+                        handleAnswer(input, qData.answer);
+                    });
+
+                    input.addEventListener('change', () => handleAnswer(input, qData.answer));
+
+                    optionsContainer.appendChild(label);
+                });
+            } else {
+                displayResults();
+            }
+        }
+
+        function handleAnswer(selectedInput, correctAnswer) {
+            if (hasAnsweredCurrentQuestion) return;
+
+            hasAnsweredCurrentQuestion = true;
+
+            const selectedLabel = selectedInput.closest('label');
+            const selectedValue = selectedInput.value;
+
+            if (selectedValue === correctAnswer) {
+                selectedLabel.classList.add('correct');
+                correctAnswersCount++;
+            } else {
+                selectedLabel.classList.add('incorrect');
+                incorrectAnswersCount++;
+                const allOptions = optionsContainer.querySelectorAll('input[type="radio"]');
+                allOptions.forEach(input => {
+                    if (input.value === correctAnswer) {
+                        input.closest('label').classList.add('correct');
+                    }
+                });
+            }
+
+            optionsContainer.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.disabled = true;
+            });
+        }
+
+        function moveToNextQuestion() {
+            if (!hasAnsweredCurrentQuestion && currentQuestionIndex < questions.length) {
+                unansweredQuestionsCount++;
+            }
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function displayResults() {
+            quizSection.classList.remove('active');
+            resultSection.classList.add('active');
+
+            displayUserName.textContent = userName;
+            correctCount.textContent = correctAnswersCount;
+            incorrectCount.textContent = incorrectAnswersCount;
+            unansweredCount.textContent = unansweredQuestionsCount;
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            incorrectAnswersCount = 0;
+            unansweredQuestionsCount = 0;
+            userName = "";
+            hasAnsweredCurrentQuestion = false;
+
+            userNameInput.value = "";
+            resultSection.classList.remove('active');
+            nameInputSection.classList.add('active');
+        }
+
+        // Initial state: show name input section
+        nameInputSection.classList.add('active');
+    </script>
+</body>
+</html>
